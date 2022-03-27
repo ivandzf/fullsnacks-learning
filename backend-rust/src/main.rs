@@ -1,6 +1,6 @@
 use actix_web::{App, HttpServer};
-use backend_rust::InMemoryStore;
-use log::info;
+use backend_rust::{InMemory, InMemoryStore};
+use log;
 
 mod handler;
 mod entity;
@@ -8,11 +8,14 @@ mod service;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    info!("Starting http server: 8080");
+    log::info!("Starting http server: 8080");
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
+        let store = InMemory::new();
+
         App::new()
-            .service(handler::todo::index)
+            .app_data(store)
+            .service(handler::todo::get_all)
             .service(handler::todo::hello_post)
     })
     .bind(("127.0.0.1", 8080))?

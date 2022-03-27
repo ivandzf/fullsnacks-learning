@@ -1,32 +1,32 @@
 use std::collections::HashMap;
 
-pub struct InMemory<T> {
-    pub data: HashMap<String, T>,
+pub struct InMemory {
+    pub data: HashMap<String, String>,
 }
 
-pub trait InMemoryStore<T> {
+pub trait InMemoryStore {
     fn new() -> Self;
-    fn get(&self, key: &str) -> Option<&T>;
-    fn get_all(&self) -> &HashMap<String, T>;
-    fn set(&mut self, key: String, value: T);
+    fn get(&self, key: &str) -> Option<&String>;
+    fn get_all(&self) -> &HashMap<String, String>;
+    fn set(&mut self, key: String, value: String);
 }
 
-impl<T> InMemoryStore<T> for InMemory<T> {
+impl InMemoryStore for InMemory {
     fn new() -> Self {
         InMemory {
             data: HashMap::new(),
         }
     }
 
-    fn get(&self, key: &str) -> Option<&T> {
+    fn get(&self, key: &str) -> Option<&String> {
         self.data.get(key)
     }
 
-    fn get_all(&self) -> &HashMap<String, T> {
+    fn get_all(&self) -> &HashMap<String, String> {
         &self.data
     }
 
-    fn set(&mut self, key: String, value: T) {
+    fn set(&mut self, key: String, value: String) {
         self.data.insert(key, value);
     }
 }
