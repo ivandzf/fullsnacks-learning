@@ -1,6 +1,8 @@
-use actix_web::{App, HttpServer};
+#[macro_use]
+extern crate log;
+
+use actix_web::{App, HttpServer, web::Data};
 use backend_rust::{InMemory, InMemoryStore};
-use log;
 
 mod handler;
 mod entity;
@@ -8,10 +10,12 @@ mod service;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    log::info!("Starting http server: 8080");
+    env_logger::init();
+
+    info!("Starting http server: 8080");
 
     HttpServer::new(move || {
-        let store = InMemory::new();
+        let store = Data::new(InMemory::new());
 
         App::new()
             .app_data(store)
