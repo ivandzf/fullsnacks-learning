@@ -1,0 +1,1 @@
+/Users/ivan/Documents/github/fullsnacks-learning/data-structures/rust/target/debug/singly_linked_list: /Users/ivan/Documents/github/fullsnacks-learning/data-structures/rust/src/bin/singly_linked_list.rs
