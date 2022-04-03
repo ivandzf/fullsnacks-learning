@@ -2,7 +2,7 @@
 extern crate log;
 
 use actix_web::{App, HttpServer, web::Data, middleware};
-use backend_rust::{InMemory, InMemoryStore, AppState};
+use backend_rust::AppState;
 
 mod handler;
 mod entity;
@@ -15,14 +15,9 @@ async fn main() -> std::io::Result<()> {
     info!("Starting http server: 8080");
 
     HttpServer::new(move || {
-        let store = InMemory::new();
-        let app_state = AppState {
-            store: InMemory::new(),
-        };
-
         App::new()
             .wrap(middleware::Logger::default())
-            .app_data(store)
+            .app_data(Data::new(AppState::new()))
             .service(handler::todo::get_all)
             .service(handler::todo::hello_post)
     })

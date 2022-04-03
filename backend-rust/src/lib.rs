@@ -1,41 +1,18 @@
-use std::{collections::HashMap, sync::{Mutex, Arc}};
-
 pub struct AppState {
-    pub store: InMemory,
+    pub store: sled_extensions::Db,
 }
 
-pub struct InMemory {
-    pub data: Arc<Mutex<HashMap<String, String>>>,
-}
+const SLED_PATH: &str = "./sled";
 
-pub trait InMemoryStore {
-    fn new() -> Self;
-    fn get(&self, key: &str) -> Option<String>;
-    fn get_all(&self) -> Vec<String>;
-    fn add(&mut self, key: String, value: String);
-}
+impl AppState {
+    pub fn new() -> Self {
+        let db = sled_extensions::Config::default()
+            .path(SLED_PATH)
+            .open()
+            .expect("Failed to open sled database");
 
-impl InMemoryStore for InMemory {
-    fn new() -> Self {
-        InMemory {
-            data: Arc::new(Mutex::new(HashMap::new())),
+        AppState { 
+            store: db,
         }
-    }
-
-    fn get(&self, key: &str) -> Option<String> {
-        self.data.lock().unwrap().get(key).cloned()
-    }
-
-    fn get_all(&self) -> Vec<String> {
-        self.data
-            .lock()
-            .unwrap()
-            .values()
-            .map(|v| v.to_string())
-            .collect()
-    }
-
-    fn add(&mut self, key: String, value: String) {
-        self.data.lock().unwrap().insert(key, value);
     }
 }
