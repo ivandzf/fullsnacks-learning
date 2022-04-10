@@ -3,18 +3,18 @@ use std::{
     usize,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Node<T> {
     value: T,
     next: Option<Box<Node<T>>>,
 }
 
-impl<T: Debug> Display for Node<T> {
+impl<T: Debug> Display for Node<T>
+where
+    T: Display,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self.next {
-            None => write!(f, "{:?}", self.value),
-            Some(ref node) => write!(f, "{:?},{}", self.value, *node),
-        }
+        write!(f, "{}", self.value)
     }
 }
 
@@ -33,19 +33,6 @@ struct LinkedList<T> {
     count: usize,
 }
 
-impl<T: Debug> Display for LinkedList<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let _ = write!(f, "[");
-        match self.head {
-            None => {}
-            Some(ref node) => {
-                let _ = write!(f, "{}", node);
-            }
-        }
-        write!(f, "]")
-    }
-}
-
 impl<T: Debug> LinkedList<T> {
     fn new() -> Self {
         LinkedList {
@@ -58,7 +45,9 @@ impl<T: Debug> LinkedList<T> {
     fn insert_last(&mut self, v: T) {
         let new_node = Node::new(v);
         match self.head {
-            None => self.head = Some(new_node),
+            None => {
+                self.head = Some(new_node);
+            }
             Some(_) => {
                 self.get_next_nth_node(self.count - 1)
                     .map(|node| node.next = Some(Box::new(new_node)));
@@ -66,7 +55,7 @@ impl<T: Debug> LinkedList<T> {
         }
 
         // manually count, to reduce calculate the lenght of linked list
-        self.count = self.count + 1
+        self.count += 1
     }
 
     // directly set on the head, O(1)
@@ -82,7 +71,7 @@ impl<T: Debug> LinkedList<T> {
         }
 
         // manually count, to reduce calculate the lenght of linked list
-        self.count = self.count + 1
+        self.count += 1
     }
 
     // need traverse operation to get the tail, O(n)
@@ -96,9 +85,8 @@ impl<T: Debug> LinkedList<T> {
                     self.get_next_nth_node(self.count - 2)
                         .map(|node| node.next = None);
                 }
-                // self.get_next_nth_node(self.count - 1).take();
                 // manually count, to reduce calculate the lenght of linked list
-                self.count = self.count - 1
+                self.count -= 1
             }
         }
     }
@@ -109,7 +97,7 @@ impl<T: Debug> LinkedList<T> {
             .take()
             .map(|head| self.head = head.next.map(|node| *node));
         // manually count, to reduce calculate the lenght of linked list
-        self.count = self.count - 1
+        self.count -= 1
     }
 
     // traverse and get the linked list by number of index
@@ -126,7 +114,7 @@ impl<T: Debug> LinkedList<T> {
     }
 
     fn display(&self) {
-        if self.head.is_none() {
+        if self.count < 1 {
             println!("Linked List is empty !!");
             return;
         }
