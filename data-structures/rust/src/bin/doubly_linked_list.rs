@@ -1,6 +1,8 @@
+#![allow(dead_code)]
+
 use std::{
-    fmt::{Display, Formatter, Result, Debug},
-    usize, rc::Rc, borrow::{BorrowMut, Borrow},
+    fmt::{Debug, Display, Formatter, Result},
+    usize,
 };
 
 #[derive(Debug)]
@@ -30,8 +32,7 @@ where
 }
 
 struct LinkedList<T> {
-    head: Option<Rc<Node<T>>>,
-    tail: Option<Rc<Node<T>>>,
+    head: Option<Node<T>>,
     count: usize,
 }
 
@@ -39,25 +40,32 @@ impl<T: Debug> LinkedList<T> {
     fn new() -> Self {
         LinkedList {
             head: None,
-            tail: None,
             count: 0,
         }
     }
 
     fn insert_last(&mut self, v: T) {
-        let mut new_node = Rc::new(Node::new(v));
-        match self.tail {
+        let mut new_node = Node::new(v);
+        match self.head {
             None => {
-                self.tail = Some(Rc::clone(&new_node));
                 self.head = Some(new_node);
-            },
-            Some(tail) => {
-                self.tail.borrow_mut().unwrap().next = Some(Box::new());
-                new_node.prev = Some(Rc::clone(&tail));
-                self.tail = Some(Rc::clone(&new_node));
             }
+            Some(tail) => {}
         }
         self.count += 1;
+    }
+
+    // traverse and get the linked list by number of index
+    fn get_next_nth_node(&mut self, n: usize) -> Option<&mut Node<T>> {
+        let mut nth_node = self.head.as_mut();
+        for _ in 0..n {
+            nth_node = match nth_node {
+                None => return None,
+                Some(node) => node.next.as_mut().map(|node| &mut **node),
+            }
+        }
+
+        nth_node
     }
 
     fn display(&self) {
@@ -67,16 +75,21 @@ impl<T: Debug> LinkedList<T> {
         }
 
         println!(
-            "Current length: {}, Head: {:?}, Tail: {:?}",
-            self.count, self.head, self.tail
+            "Current length: {}, Linked List: {:?}",
+            self.count, self.head
         );
     }
 }
 
-fn main() {
-    let mut ll: LinkedList<i32> = LinkedList::new();
+fn main() {}
 
-    ll.insert_last(50);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    ll.display();
+    #[test]
+    fn init() {
+        let list: LinkedList<i32> = LinkedList::new();
+        assert_eq!(list.count, 0);
+    }
 }

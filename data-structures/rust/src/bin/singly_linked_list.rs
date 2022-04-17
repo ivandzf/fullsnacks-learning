@@ -1,9 +1,11 @@
+#![allow(dead_code)]
+
 use std::{
     fmt::{Debug, Display, Formatter, Result},
     usize,
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct Node<T> {
     value: T,
     next: Option<Box<Node<T>>>,
@@ -127,23 +129,62 @@ impl<T: Debug> LinkedList<T> {
     }
 }
 
-fn main() {
-    let mut ll = LinkedList::new();
-    ll.insert_last(1);
-    ll.insert_last(2);
-    ll.insert_last(5);
+fn main() {}
 
-    ll.display();
+#[cfg(test)]
+mod test {
+    use super::*;
 
-    ll.insert_first(20);
+    #[test]
+    fn init() {
+        let ll: LinkedList<i32> = LinkedList::new();
+        assert_eq!(ll.count, 0);
+    }
 
-    ll.display();
+    #[test]
+    fn insert() {
+        let mut ll: LinkedList<i32> = LinkedList::new();
 
-    ll.remove_first();
+        // insert last
+        ll.insert_last(50);
+        assert_eq!(ll.count, 1);
+        assert_eq!(ll.get_next_nth_node(0).unwrap().value, Node::new(50).value);
 
-    ll.display();
+        ll.display();
 
-    ll.remove_last();
+        // insert first
+        ll.insert_first(100);
+        assert_eq!(ll.count, 2);
+        assert_eq!(ll.get_next_nth_node(0).unwrap().value, Node::new(100).value);
+        assert_eq!(ll.get_next_nth_node(1).unwrap().value, Node::new(50).value);
 
-    ll.display();
+        ll.display();
+    }
+
+    #[test]
+    fn remove() {
+        let mut ll: LinkedList<i32> = LinkedList::new();
+
+        // insert last
+        ll.insert_last(20);
+        assert_eq!(ll.count, 1);
+        assert_eq!(ll.get_next_nth_node(0).unwrap().value, Node::new(20).value);
+
+        // remove last
+        ll.remove_last();
+        assert_eq!(ll.count, 0);
+
+        ll.display();
+
+        // insert first
+        ll.insert_first(90);
+        assert_eq!(ll.count, 1);
+        assert_eq!(ll.get_next_nth_node(0).unwrap().value, Node::new(90).value);
+
+        // remove first
+        ll.remove_first();
+        assert_eq!(ll.count, 0);
+
+        ll.display();
+    }
 }
